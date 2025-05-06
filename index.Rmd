@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Berikut adalah solusi lengkap dalam R untuk menjawab seluruh pertanyaan yang diberikan, dari analisis korelasi hingga membuat dan menyimpan model regresi.
 
----
+# SOAL 1
 
 ##  **Langkah 1: Correlation Matrix**
 
@@ -58,7 +58,7 @@ corrplot(cor_matrix,
 
 ```
 
-
+# SOAL 1
 ---
 
 ##  **Langkah 2: Interpretasi Correlation Matrix**
@@ -84,7 +84,7 @@ ggplot(data, aes(x = Heating_Oil, y = Avg_Age, color = Heating_Oil)) +
 ```
 
 
-**Interpretasi:**
+**penjelasan:**
 Jika tidak terlihat pola kuat antara usia penghuni dan konsumsi minyak, maka usia mungkin bukan faktor utama.
 
 ---
@@ -102,7 +102,7 @@ ggplot(data, aes(x = Temperature, y = Insulation, color = Heating_Oil)) +
 ```
 
 
-**Interpretasi:**
+**penjelasan:**
 
 * Konsumsi tertinggi biasanya terjadi saat suhu rendah dan insulasi buruk.
 * Pola ini menunjukkan bahwa kampanye efisiensi energi bisa difokuskan ke rumah-rumah dengan kondisi tersebut.
