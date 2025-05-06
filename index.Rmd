@@ -1,0 +1,156 @@
+---
+title: "Regression Models"
+author: "Latif Almizan-Institut Teknologi Statistika dan Bisnis Muhammadiyah"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+bibliography: references.bib
+---
+
+```{=html}
+<styl e>
+body{
+text-align: justify}
+</style>
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Berikut adalah solusi lengkap dalam R untuk menjawab seluruh pertanyaan yang diberikan, dari analisis korelasi hingga membuat dan menyimpan model regresi.
+
+---
+
+##  **Langkah 1: Correlation Matrix**
+
+```{r}
+# Library
+library(ggplot2)
+library(corrplot)
+library(readr)
+library(dplyr)
+
+# Baca data
+data <- read_csv("HeatingOil.csv")
+
+# Ambil kolom yang dibutuhkan dan pastikan tidak ada NA
+data_subset <- data %>%
+  select(Heating_Oil, Insulation, Temperature, Num_Occupants, Avg_Age, Home_Size) %>%
+  na.omit()
+
+# Correlation Matrix
+cor_matrix <- cor(data_subset)
+
+# Tampilkan correlation matrix sebagai tabel
+round(cor_matrix, 2)
+
+# Visualisasi correlation matrix (heatmap)
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         tl.col = "black",
+         tl.srt = 45)
+
+```
+
+
+---
+
+##  **Langkah 2: Interpretasi Correlation Matrix**
+
+**Contoh penjelasan:**
+
+* `Heating_Oil` memiliki **korelasi negatif kuat dengan Temperature** → Semakin dingin suhu luar, semakin tinggi konsumsi minyak.
+* Korelasi **positif sedang dengan Home\_Size dan Num\_Occupants** → Rumah besar dan penghuni banyak cenderung lebih banyak menggunakan minyak.
+* Korelasi **negatif ringan dengan Insulation** → Rumah dengan insulasi baik cenderung hemat minyak.
+
+---
+
+##  **Langkah 3: Scatter Plot 1 – Heating\_Oil vs Avg\_Age**
+
+```{r}
+ggplot(data, aes(x = Heating_Oil, y = Avg_Age, color = Heating_Oil)) +
+  geom_point(alpha = 0.7) +
+  scale_color_gradient(low = "blue", high = "green") +
+  theme_minimal() +
+  labs(title = "Heating Oil vs Rata-rata Usia Penghuni",
+       x = "Jumlah Heating_Oil",
+       y = "Avg_Age")
+```
+
+
+**Interpretasi:**
+Jika tidak terlihat pola kuat antara usia penghuni dan konsumsi minyak, maka usia mungkin bukan faktor utama.
+
+---
+
+##  **Langkah 4: Scatter Plot 2 – Temperature vs Insulation (colored by Heating\_Oil)**
+
+```{r}
+ggplot(data, aes(x = Temperature, y = Insulation, color = Heating_Oil)) +
+  geom_point(alpha = 0.7) +
+  scale_color_gradient(low = "orange", high = "red") +
+  theme_minimal() +
+  labs(title = "Temperature vs Insulation",
+       x = "Temperature",
+       y = "Insulation")
+```
+
+
+**Interpretasi:**
+
+* Konsumsi tertinggi biasanya terjadi saat suhu rendah dan insulasi buruk.
+* Pola ini menunjukkan bahwa kampanye efisiensi energi bisa difokuskan ke rumah-rumah dengan kondisi tersebut.
+
+---
+
+##  **Langkah 5: Rekomendasi untuk Sarah**
+
+1. **Target pelanggan:** Fokus ke rumah besar dengan insulasi buruk di daerah bersuhu dingin.
+2. **Promosi:** Tawarkan paket langganan atau diskon untuk rumah dengan banyak penghuni.
+3. **Edukasi:** Kampanye efisiensi energi untuk rumah dengan skor insulasi rendah.
+
+---
+
+#  SOAL 2: Model Prediksi
+
+### Langkah Sarah: Buat dan Simpan Model
+
+```{r}
+# Buat model regresi linier
+model <- lm(Heating_Oil ~ Insulation + Temperature + Num_Occupants + Avg_Age + Home_Size, data = data)
+
+# Simpan model ke file
+saveRDS(model, "model_heating_oil.rds")
+```
+
+
+---
+
+### Langkah Marketer: Baca Model dan Prediksi Calon Pelanggan
+
+```{r}
+# Baca model dari file
+model <- readRDS("model_heating_oil.rds")
+
+# Baca data calon pelanggan
+marketing_data <- read_csv("HeatingOil-Marketing.csv")
+
+# Prediksi kebutuhan minyak
+prediksi <- predict(model, newdata = marketing_data)
+
+# Tampilkan hasil
+marketing_data$Prediksi_Heating_Oil <- prediksi
+print(marketing_data)
+
+# Simpan hasil jika diperlukan
+write_csv(marketing_data, "Prediksi_Hasil.csv")
+```
+
+
+---
